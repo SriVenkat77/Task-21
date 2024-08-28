@@ -1,0 +1,121 @@
+1. Find all the topics and tasks which are taught in the month of October
+
+db.topics.aggregate([
+  {
+    $match: {
+      date_covered: {
+        $gte: ISODate("2020-10-01"),
+        $lt: ISODate("2020-11-01")
+      }
+    }
+  },
+  {
+    $lookup: {
+      from: "tasks",
+      localField: "task_id",
+      foreignField: "_id",
+      as: "tasks"
+    }
+  }
+])
+
+
+2.Find all the company drives which appeared between 15-Oct-2020 and 31-Oct-2020
+
+db.company_drives.find({
+  drive_date: {
+    $gte: ISODate("2020-10-15"),
+    $lt: ISODate("2020-11-01")
+  }
+})
+
+
+3.Find all the company drives and students who appeared for the placement
+
+db.company_drives.aggregate([
+  {
+    $lookup: {
+      from: "users",
+      localField: "students_attended",
+      foreignField: "_id",
+      as: "students"
+    }
+  }
+])
+
+
+4.Find the number of problems solved by the user in CodeKata
+
+db.users.aggregate([
+  {
+    $lookup: {
+      from: "codekata",
+      localField: "_id",
+      foreignField: "user_id",
+      as: "codekata_problems"
+    }
+  },
+  {
+    $unwind: "$codekata_problems"
+  },
+  {
+    $match: {
+      "codekata_problems.status": "solved"
+    }
+  },
+  {
+    $group: {
+      _id: "$_id",
+      name: { $first: "$name" },
+      problems_solved: { $sum: 1 }
+    }
+  }
+])
+
+
+5.Find all the mentors with more than 15 mentees
+
+db.mentors.find({
+  $expr: {
+    $gt: [{ $size: "$mentees" }, 15]
+  }
+})
+
+
+6.Find the number of users who are absent and task not submitted between 15-Oct-2020 and 31-Oct-2020
+
+db.users.aggregate([
+  {
+    $lookup: {
+      from: "attendance",
+      localField: "_id",
+      foreignField: "user_id",
+      as: "attendance_records"
+    }
+  },
+  {
+    $lookup: {
+      from: "tasks",
+      localField: "_id",
+      foreignField: "user_id",
+      as: "tasks"
+    }
+  },
+  {
+    $match: {
+      "attendance_records.date": {
+        $gte: ISODate("2020-10-15"),
+        $lt: ISODate("2020-11-01")
+      },
+      "attendance_records.status": "absent",
+      "tasks.submission_date": null
+    }
+  },
+  {
+    $group: {
+      _id: "$_id",
+      name: { $first: "$name" },
+      absences: { $sum: 1 }
+    }
+  }
+])  

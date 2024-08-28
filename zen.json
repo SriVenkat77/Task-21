@@ -1,0 +1,74 @@
+Collections and Schema
+
+Users Collection 
+
+ {
+  "_id": ObjectId,
+  "name": String,
+  "email": String,
+  "batch": String,
+  "mentor_id": ObjectId,
+  "codekata_problems_solved": Number
+} 
+
+
+CodeKata Collection
+
+{
+  "_id": ObjectId,
+  "user_id": ObjectId,
+  "problem_id": ObjectId,
+  "status": String, // "solved" or "unsolved"
+  "solved_date": Date
+}
+
+
+Attendance Collection
+
+{
+  "_id": ObjectId,
+  "user_id": ObjectId,
+  "date": Date,
+  "status": String // "present" or "absent"
+}
+
+
+Topics Collection
+
+{
+  "_id": ObjectId,
+  "topic_name": String,
+  "date_covered": Date,
+  "task_id": ObjectId
+}
+
+
+Tasks Collection
+
+{
+  "_id": ObjectId,
+  "task_name": String,
+  "description": String,
+  "due_date": Date,
+  "submission_date": Date,
+  "user_id": ObjectId
+}
+
+
+Company Drives Collection
+
+{
+  "_id": ObjectId,
+  "company_name": String,
+  "drive_date": Date,
+  "students_attended": [ObjectId] 
+}
+
+
+Mentors Collection
+
+{
+  "_id": ObjectId,
+  "name": String,
+  "mentees": [ObjectId] 
+}  
